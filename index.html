@@ -1,1 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
 
+<head>
+  <!-- Menentukan karakter encoding standar UTF-8 agar teks dan simbol terbaca dengan benar -->
+  <meta charset="UTF-8">
+  <!-- Pengaturan viewport agar tampilan web responsif dan ukurannya pas di layar HP atau laptop -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WikiHealth</title>
+  <!-- Menghubungkan file desain eksternal (style.css) untuk mempercantik tampilan elemen HTML -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ================= 1. HEADER & NAVIGASI UTAMA ================= -->
+  <!-- Berisi judul web dan menu tautan (anchor link) untuk menggulir halaman -->
+  <header>
+    <h1>WikiHealth</h1>
+
+    <nav>
+      <!-- Menggunakan tag <a> dengan href menuju id section tertentu -->
+      <a href="#beranda">Beranda</a>
+      <a href="#artikel">Artikel</a>
+      <a href="#tentang">Tentang</a>
+    </nav>
+  </header>
+
+  <!-- ================= 2. BANNER SAMBUTAN (HERO SECTION) ================= -->
+  <!-- Bagian pembuka dengan latar belakang gambar dan teks ajakan -->
+  <section id="beranda" class="beranda">
+    <h2>Selamat Datang di WikiHealth</h2>
+    <p>
+      Temukan informasi kesehatan untuk membantu menjaga
+      kesehatan tubuh dan pikiran.
+    </p>
+    <!-- Tombol pintasan menuju daftar artikel -->
+    <a href="#artikel" class="tombol">Lihat Artikel</a>
+  </section>
+
+  <!-- ================= 3. KONTEN UTAMA (MAIN) ================= -->
+  <main>
+    <!-- Bagian Daftar Artikel & Pencarian -->
+    <section id="artikel">
+      <h2>Artikel Kesehatan</h2>
+      <p>Baca berbagai informasi seputar kesehatan.</p>
+
+      <!-- Fitur Pencarian Teks -->
+      <div class="pencarian">
+        <input type="text" id="searchInput" placeholder="Cari artikel...">
+        <button id="searchButton">Cari</button>
+      </div>
+
+      <!-- Layout Grid: Membagi area menjadi 2 kolom (Daftar Artikel di kiri, Sidebar Kategori di kanan) -->
+      <div class="layout">
+        <!-- Wadah utama tempat JavaScript akan memasukkan daftar artikel secara dinamis -->
+        <div class="konten">
+          <div id="articleList"></div>
+          <!-- Pesan teks yang otomatis disembunyikan, kecuali pencarian tidak ditemukan -->
+          <p id="emptyMessage" hidden>
+            Artikel tidak ditemukan.
+          </p>
+        </div>
+
+        <!-- Sidebar Kategori & Tombol Tambah -->
+        <aside>
+          <h3>Kategori</h3>
+
+          <!-- Tombol kategori dengan atribut 'data-category' untuk dibaca oleh JavaScript -->
+          <button class="category-button active" data-category="Semua">
+            Semua
+          </button>
+
+          <button class="category-button" data-category="Kesehatan Umum">
+            Kesehatan Umum
+          </button>
+
+          <button class="category-button" data-category="Kesehatan Mental">
+            Kesehatan Mental
+          </button>
+
+          <button class="category-button" data-category="Nutrisi">
+            Nutrisi
+          </button>
+
+          <button class="category-button" data-category="Gaya Hidup">
+            Gaya Hidup
+          </button>
+
+          <!-- Tombol untuk memicu fungsi pembukaan form tambah artikel -->
+          <button id="showFormButton" class="tombol tambah">
+            Tambah Artikel
+          </button>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= 4. HALAMAN DETAIL ARTIKEL (DETAIL SECTION) ================= -->
+    <!-- 
+      - Awalnya disembunyikan menggunakan atribut 'hidden'.
+      - Hanya akan ditampilkan oleh JavaScript ketika pengguna mengklik salah satu judul artikel.
+    -->
+    <section id="detailSection" hidden>
+      <!-- Tombol untuk kembali ke daftar artikel utama -->
+      <button id="backButton" class="tombol-kembali">
+        Kembali
+      </button>
+
+      <!-- Kotak pembungkus isi detail artikel -->
+      <div class="detail-artikel">
+        <!-- Kategori artikel -->
+        <p id="detailCategory"></p>
+        <!-- Judul artikel utama -->
+        <h2 id="detailTitle"></h2>
+        <!-- Ringkasan singkat artikel -->
+        <p id="detailSummary"></p>
+        <!-- Tempat untuk menampilkan gambar utama dan isi konten lengkap secara dinamis -->
+        <div id="detailContent"></div>
+
+        <!-- Tombol Aksi khusus untuk artikel yang sedang dibaca -->
+        <div class="aksi">
+          <button id="editButton" class="tombol">Edit</button>
+          <button id="deleteButton" class="tombol-hapus">
+            Hapus
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 5. FORM TAMBAH & EDIT ARTIKEL (FORM SECTION) ================= -->
+    <!-- 
+      - Awalnya disembunyikan menggunakan atribut 'hidden'.
+      - Muncul ketika tombol 'Tambah Artikel' atau 'Edit' diklik.
+    -->
+    <section id="formSection" hidden>
+      <div class="form-artikel">
+        <!-- Judul dinamis (bisa berubah jadi "Tambah Artikel" atau "Edit Artikel") -->
+        <h2 id="formTitle">Tambah Artikel</h2>
+
+        <!-- Form input data -->
+        <form id="articleForm">
+          <!-- Input tersembunyi (hidden) untuk menyimpan ID artikel saat proses edit -->
+          <input type="hidden" id="articleId">
+
+          <!-- Input Judul Artikel -->
+          <label for="title">Judul Artikel</label>
+          <input type="text" id="title" required>
+
+          <!-- Pilihan Kategori Artikel -->
+          <label for="category">Kategori</label>
+          <select id="category" required>
+            <option value="">Pilih kategori</option>
+            <option value="Kesehatan Umum">Kesehatan Umum</option>
+            <option value="Kesehatan Mental">Kesehatan Mental</option>
+            <option value="Nutrisi">Nutrisi</option>
+            <option value="Gaya Hidup">Gaya Hidup</option>
+          </select>
+
+          <!-- Input Ringkasan Artikel -->
+          <label for="summary">Ringkasan</label>
+          <textarea id="summary" rows="3" required></textarea>
+
+          <!-- Input Isi Konten Lengkap Artikel -->
+          <label for="content">Isi Artikel</label>
+          <textarea id="content" rows="10" required></textarea>
+
+          <!-- Tombol Aksi Form (Simpan dan Batal) -->
+          <div class="aksi">
+            <button type="submit" class="tombol">Simpan</button>
+            <button type="button" id="cancelButton" class="tombol-kembali">
+              Batal
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= 6. BAGIAN TENTANG (ABOUT SECTION) ================= -->
+    <section id="tentang" class="tentang">
+      <h2>Tentang WikiHealth</h2>
+      <p>
+        WikiHealth merupakan website informasi kesehatan
+        yang berisi artikel mengenai kesehatan umum,
+        nutrisi, gaya hidup, dan kesehatan mental.
+      </p>
+    </section>
+  </main>
+
+  <!-- ================= 7. FOOTER ================= -->
+  <footer>
+    <p>&copy; 2026 WikiHealth</p>
+  </footer>
+
+  <!-- Menghubungkan file logika JavaScript eksternal (script.js) -->
+  <script src="script.js"></script>
+</body>
+
+</html>
