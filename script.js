@@ -312,7 +312,7 @@ tombolEdit.addEventListener("click", function () {
             pilihanKategori.value = daftarArtikel[i].category;
             inputRingkasan.value = daftarArtikel[i].summary;
             inputKonten.value = daftarArtikel[i].content;
-            inputGambar.value = daftarArtikel[i].gambar;
+            inputGambar.value = daftarArtikel[i].image;
 
             judulForm.textContent = "Edit Artikel";
             sectionDetail.hidden = true;
