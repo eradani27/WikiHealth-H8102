@@ -194,3 +194,193 @@ function bacaArtikel(id) {
         }
     }
 }
+
+
+/* ==========================================================================
+   5. PENGELOLAAN FORM & STATE NAVIGATION
+   - Kumpulan fungsi modular untuk mereset, membuka, dan menutup form input.
+   ========================================================================== */
+   function kosongkanForm() {
+    formArtikel.reset();
+    inputIdArtikel.value = "";
+    judulForm.textContent = "Tambah Artikel";
+}
+
+tombolBukaForm.addEventListener("click", function () {
+    kosongkanForm();
+    sectionDetail.hidden = true;
+    sectionForm.hidden = false;
+    sectionForm.scrollIntoView();
+});
+
+tombolBatal.addEventListener("click", function () {
+    kosongkanForm();
+    sectionForm.hidden = true;
+    document.getElementById("artikel").scrollIntoView();
+});
+
+tombolKembali.addEventListener("click", function () {
+    sectionDetail.hidden = true;
+    document.getElementById("artikel").scrollIntoView();
+});
+
+
+/* ==========================================================================
+   6. CRUD: CREATE & UPDATE (MENAMBAH ATAU MENGEDIT ARTIKEL)
+   - Menggunakan 'event.preventDefault()' untuk mencegah form melakukan refresh bawaan.
+   - Menggunakan method Array '.push()' untuk memasukkan objek data baru.
+   - Menggunakan kondisi If-Else untuk membedakan mode Tambah Baru atau Edit Data.
+   ========================================================================== */
+formArtikel.addEventListener("submit", function (event) {
+    event.preventDefault(); // Mencegah reload halaman
+
+    let judul = inputJudul.value.trim();
+    let kategori = pilihanKategori.value;
+    let ringkasan = inputRingkasan.value.trim();
+    let konten = inputKonten.value.trim();
+
+    // Validasi sederhana: Memastikan semua kolom wajib terisi
+    if (judul === "" || kategori === "" || ringkasan === "" || konten === "") {
+        alert("Semua kolom harus diisi.");
+        return;
+    }
+
+    // PENGKONDISIAN: Cek apakah input ID kosong (Tambah Baru) atau ada isinya (Edit)
+    if (inputIdArtikel.value === "") {
+        // Logika pembuatan ID otomatis bertambah
+        let idBaru = 1;
+        for (let i = 0; i < daftarArtikel.length; i++) {
+            if (daftarArtikel[i].id >= idBaru) {
+                idBaru = daftarArtikel[i].id + 1;
+            }
+        }
+
+        // Membuat objek artikel baru
+        let artikelBaru = {
+            id: idBaru,
+            title: judul,
+            category: kategori,
+            summary: ringkasan,
+            content: konten,
+            image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80"
+        };
+
+        // ARRAY METHOD: Memasukkan data baru ke dalam array menggunakan '.push()'
+        daftarArtikel.push(artikelBaru);
+    } else {
+        // Logika Edit Data berdasarkan ID yang cocok
+        let idEdit = Number(inputIdArtikel.value);
+        for (let i = 0; i < daftarArtikel.length; i++) {
+            if (daftarArtikel[i].id === idEdit) {
+                daftarArtikel[i].title = judul;
+                daftarArtikel[i].category = kategori;
+                daftarArtikel[i].summary = ringkasan;
+                daftarArtikel[i].content = konten;
+            }
+        }
+    }
+
+    // Mereset form, menyembunyikan section, dan merender ulang tampilan
+    kosongkanForm();
+    sectionForm.hidden = true;
+    sectionDetail.hidden = true;
+
+    idArtikelPilihan = 0;
+    kategoriAktif = "Semua";
+    inputPencarian.value = "";
+
+    perbaruiTombolKategori();
+    renderArtikel();
+
+    document.getElementById("artikel").scrollIntoView();
+    alert("Artikel berhasil disimpan.");
+});
+
+
+/* ==========================================================================
+   7. CRUD: EDIT & DELETE (MENGEDIT DAN MENGHAPUS ARTIKEL)
+   - Fungsi Edit memuat data lama ke dalam form.
+   - Fungsi Hapus menyaring array menggunakan teknik membuat array penampung baru.
+   ========================================================================== */
+tombolEdit.addEventListener("click", function () {
+    for (let i = 0; i < daftarArtikel.length; i++) {
+        if (daftarArtikel[i].id === idArtikelPilihan) {
+            inputIdArtikel.value = daftarArtikel[i].id;
+            inputJudul.value = daftarArtikel[i].title;
+            pilihanKategori.value = daftarArtikel[i].category;
+            inputRingkasan.value = daftarArtikel[i].summary;
+            inputKonten.value = daftarArtikel[i].content;
+
+            judulForm.textContent = "Edit Artikel";
+            sectionDetail.hidden = true;
+            sectionForm.hidden = false;
+            sectionForm.scrollIntoView();
+            return;
+        }
+    }
+});
+
+tombolHapus.addEventListener("click", function () {
+    let konfirmasi = confirm("Yakin ingin menghapus artikel ini?");
+    if (konfirmasi === false) {
+        return;
+    }
+
+    let artikelSisa = [];
+
+    // Looping untuk menyaring data: Hanya memasukkan artikel yang ID-nya TIDAK SAMA dengan yang dihapus
+    for (let i = 0; i < daftarArtikel.length; i++) {
+        if (daftarArtikel[i].id !== idArtikelPilihan) {
+            artikelSisa.push(daftarArtikel[i]);
+        }
+    }
+
+    daftarArtikel = artikelSisa; // Memperbarui array utama
+    idArtikelPilihan = 0;
+    sectionDetail.hidden = true;
+
+    renderArtikel();
+    document.getElementById("artikel").scrollIntoView();
+});
+
+
+/* ==========================================================================
+   8. EVENT LISTENER, PENCARIAN & FILTER KATEGORI
+   - Menghubungkan interaksi pengguna (click, input) dengan fungsi-fungsi di atas.
+   ========================================================================== */
+tombolCari.addEventListener("click", function () {
+    renderArtikel();
+});
+
+inputPencarian.addEventListener("input", function () {
+    renderArtikel(); // Pencarian langsung berjalan otomatis saat user mengetik huruf
+});
+
+let tombolKategori = document.getElementsByClassName("category-button");
+
+// Looping untuk memberikan Event Listener ke setiap tombol kategori di sidebar
+for (let i = 0; i < tombolKategori.length; i++) {
+    tombolKategori[i].addEventListener("click", function () {
+        kategoriAktif = this.dataset.category;
+        perbaruiTombolKategori();
+        renderArtikel();
+    });
+}
+
+function perbaruiTombolKategori() {
+    for (let i = 0; i < tombolKategori.length; i++) {
+        if (tombolKategori[i].dataset.category === kategoriAktif) {
+            tombolKategori[i].classList.add("active");
+        } else {
+            tombolKategori[i].classList.remove("active");
+        }
+    }
+}
+
+
+/* ==========================================================================
+   9. INISIALISASI AWAL APLIKASI
+   - Menjalankan fungsi utama saat pertama kali file dimuat di browser.
+   ========================================================================== */
+renderArtikel();
+perbaruiTombolKategori();
