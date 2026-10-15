@@ -238,6 +238,7 @@ formArtikel.addEventListener("submit", function (event) {
     let kategori = pilihanKategori.value;
     let ringkasan = inputRingkasan.value.trim();
     let konten = inputKonten.value.trim();
+    let gambar = inputGambar.value.trim();
 
     // Validasi sederhana: Memastikan semua kolom wajib terisi
     if (judul === "" || kategori === "" || ringkasan === "" || konten === "") {
@@ -262,7 +263,7 @@ formArtikel.addEventListener("submit", function (event) {
             category: kategori,
             summary: ringkasan,
             content: konten,
-            image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80"
+            image: gambar
         };
 
         // ARRAY METHOD: Memasukkan data baru ke dalam array menggunakan '.push()'
@@ -276,6 +277,7 @@ formArtikel.addEventListener("submit", function (event) {
                 daftarArtikel[i].category = kategori;
                 daftarArtikel[i].summary = ringkasan;
                 daftarArtikel[i].content = konten;
+                daftarArtikel[i].image = gambar;
             }
         }
     }
@@ -310,6 +312,7 @@ tombolEdit.addEventListener("click", function () {
             pilihanKategori.value = daftarArtikel[i].category;
             inputRingkasan.value = daftarArtikel[i].summary;
             inputKonten.value = daftarArtikel[i].content;
+            inputGambar.value = daftarArtikel[i].gambar;
 
             judulForm.textContent = "Edit Artikel";
             sectionDetail.hidden = true;
